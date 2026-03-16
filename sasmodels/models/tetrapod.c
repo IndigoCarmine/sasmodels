@@ -3,8 +3,9 @@ const double A =
 
 static double u_n(int n, double theta, double alpha) {
   const double phi[4] = {0.0, M_PI_2, M_PI, 3.0 * M_PI_2};
-  return cos(A) * cos(theta + phi[n] * 2) +
-         sin(A) * sin(theta + phi[n] * 2) * cos(alpha - phi[n]);
+  const double sign[4] = {1.0, -1.0, 1.0, -1.0};
+  return sign[n] * cos(A) * cos(theta) +
+         sin(A) * sin(theta) * cos(alpha - phi[n]);
 }
 
 static double A_n(double q, double u, double L, double R) {
@@ -39,7 +40,7 @@ static double Iq(double q, double L, double R, double sld_particle,
     double integral_alpha = 0.0;
     for (int dalpha = 0; dalpha < GAUSS_N; dalpha++) {
       double alpha =
-          M_PI * (GAUSS_Z[dalpha] + 1.0);  // map from [-1, 1] to [0, pi]
+          M_PI * (GAUSS_Z[dalpha] + 1.0);  // map from [-1, 1] to [0, 2*pi]
       double w_alpha =
           GAUSS_W[dalpha] * M_PI;  // adjust weight for the new range
 

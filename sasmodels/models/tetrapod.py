@@ -6,35 +6,52 @@ Calculates the scattering from a tetrapod-shaped structure. A tetrapod consists
 of four cylindrical arms radiating from a central point, oriented along the
 (1,1,1), (-1,-1,1), (-1,1,-1), and (1,-1,-1) directions.
 
-The scattering intensity is calculated as:
+The scattering intensity is calculated as a powder average over all
+orientations:
 
 .. math::
 
-    I(q) = (\Delta \rho)^2 \left[ 4 I_{\text{arm}}(q) + 6 I_{\text{corr}}(q) \right]
+    I(q) = \frac{(\Delta \rho)^2}{4\pi}
+        \int_0^{\pi} \int_0^{2\pi}
+        \left|\sum_{n=1}^{4} F_n(q, \theta, \varphi)\right|^2
+        \sin\theta \, d\theta \, d\varphi
 
-where $\Delta\rho$ is the scattering length density contrast between the
-tetrapod and the solvent.
-
-The arm scattering $I_{\text{arm}}(q)$ is obtained by integrating over all
-orientations of each cylindrical arm:
+where $\Delta\rho$ is the SLD contrast and $F_n$ is the form factor amplitude
+of the $n$-th cylindrical arm:
 
 .. math::
 
-    I_{\text{arm}}(q) = \int_0^{\pi/4} F_{\text{cylinder}}(q, \theta, L, R)^2 \sin(\theta) d\theta
+    F_n(q, \theta, \varphi) = \text{sinc}\!\left(\frac{q u_n L}{2}\right)
+        \cdot \frac{2 J_1(q \mu_n R)}{q \mu_n R}
 
-where $F_{\text{cylinder}}$ is the form factor of a cylinder.
+with $u_n = \hat{q} \cdot \hat{a}_n$ the projection of $\hat{q}$ onto the
+arm axis, $\mu_n = \sqrt{1 - u_n^2}$, $L$ the arm length, and $R$ the arm
+radius.  Expanding the squared modulus into a double sum and exploiting the
+reality of $F_n$ gives:
 
-The correlation term $I_{\text{corr}}(q)$ accounts for coherent scattering
-between different arms.
+.. math::
+
+    I(q) = \frac{(\Delta \rho)^2}{4\pi}
+        \int \sum_{n=1}^{4}\sum_{m=1}^{4}
+        F_n F_m \cos\!\left(\frac{q(u_n-u_m)L}{2}\right)
+        \sin\theta \, d\theta \, d\varphi
+
+The cosine factor is the interference term between the centres of arms $n$
+and $m$, which are displaced by $\tfrac{L}{2}\hat{a}_n$ from the junction.
 
 Geometry
 --------
 
-The four arms are positioned along the following directions:
-- Arm 1: (1, 1, 1)
-- Arm 2: (-1, -1, 1)
-- Arm 3: (-1, 1, -1)
-- Arm 4: (1, -1, -1)
+The four arms are oriented along tetrahedral directions.  With
+$A = 109.5°/2$ (the half-angle between arms), the arm unit vectors and the
+corresponding projections $u_n$ are
+
+.. math::
+
+    u_n = s_n \cos A \cos\theta + \sin A \sin\theta \cos(\varphi - \varphi_n)
+
+where $(s_n, \varphi_n) = (+1,\ 0),\ (-1,\ \pi/2),\ (+1,\ \pi),\ (-1,\ 3\pi/2)$
+for $n = 1, 2, 3, 4$ respectively.
 
 Each arm has length $L$ and radius $R$.
 
@@ -71,3 +88,8 @@ parameters = [
 
 source = ["lib/polevl.c", "lib/sas_J1.c", "lib/gauss76.c", "tetrapod.c"]
 have_Fq = False
+
+tests = [
+    # Default parameters: length=400, radius=30, sld=4, sld_solvent=1
+    [{}, 0.1, 1.0026479478514564e-3],
+]
