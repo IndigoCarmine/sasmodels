@@ -1,0 +1,60 @@
+const double A =
+    109.5 / 2.0 * M_PI / 180.0;  // half of the angle between arms in radians
+
+static double u_n(int n, double theta, double alpha) {
+  const double phi[4] = {0.0, M_PI_2, M_PI, 3.0 * M_PI_2};
+  return cos(A) * cos(theta + phi[n] * 2) +
+         sin(A) * sin(theta + phi[n] * 2) * cos(alpha - phi[n]);
+}
+
+static double A_n(double q, double u, double L, double R) {
+  double quL2 = q * u * L * 0.5;
+
+  double term1 = (fabs(quL2) > 1e-12) ? sin(quL2) / quL2 : 1.0;
+
+  double mu = sqrt(fmax(0.0, 1.0 - u * u));
+  double qmuR = q * mu * R;
+
+  double term2 = (fabs(qmuR) > 1e-12) ? 2.0 * sas_J1(qmuR) / qmuR : 1.0;
+
+  return term1 * term2;
+}
+
+static double form_volume(double L, double R) {
+  // V = 4 * \pi * R^2 * L
+  return 4.0 * M_PI * R * R * L;
+}
+
+static double Iq(double q, double L, double R, double sld_particle,
+                 double sld_solvent) {
+  double contrast = sld_particle - sld_solvent;
+  double total = 0.0;
+
+  for (int dtheta = 0; dtheta < GAUSS_N; dtheta++) {
+    double theta =
+        M_PI_2 * (GAUSS_Z[dtheta] + 1.0);  // map from [-1, 1] to [0, pi]
+    double w_theta =
+        GAUSS_W[dtheta] * M_PI_2;  // adjust weight for the new range
+
+    double integral_alpha = 0.0;
+    for (int dalpha = 0; dalpha < GAUSS_N; dalpha++) {
+      double alpha =
+          M_PI * (GAUSS_Z[dalpha] + 1.0);  // map from [-1, 1] to [0, pi]
+      double w_alpha =
+          GAUSS_W[dalpha] * M_PI;  // adjust weight for the new range
+
+      double sum_arms = 0.0;
+      for (int n = 0; n < 4; n++) {
+        for (int m = 0; m < 4; m++) {
+          double u = u_n(n, theta, alpha);
+          double v = u_n(m, theta, alpha);
+          sum_arms += A_n(q, u, L, R) * A_n(q, v, L, R) *
+                      cos(q * (u - v) * L / 2.0) * sin(theta);
+        }
+      }
+      integral_alpha += sum_arms * w_alpha;
+    }
+    total += integral_alpha * w_theta;
+  }
+  return contrast * contrast * total * 2 * M_PI;
+}
