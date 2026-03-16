@@ -41,13 +41,13 @@ Each arm has length $L$ and radius $R$.
 References
 ----------
 
-#. J. S. Pedersen, *J. Appl. Cryst.*, 33 (2000) 488-494
+#. Seoki Kyoo Seo *Korean J. Chem. Eng.* 34(2017) 1192-1198
 
 Authorship and Verification
 ----------------------------
 
-* **Author:** NIST IGOR/DANSE **Date:** pre 2010
-* **Last Modified by:** Paul Butler **Date:** March 20, 2016
+* **Author:** Yuhei Yamada
+* **Last Modified by:**
 """
 
 import numpy as np
@@ -70,5 +70,4 @@ parameters = [
 ]
 
 source = ["lib/polevl.c", "lib/sas_J1.c", "lib/gauss76.c", "tetrapod.c"]
-valid = "radius >= 0.0 && length >= 0.0"
 have_Fq = False
