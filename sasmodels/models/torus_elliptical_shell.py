@@ -76,7 +76,7 @@ References
 Authorship and Verification
 ---------------------------
 
-* **Author:** Itsuki Tajima and Yuhei Yamada
+* **Author:** Itsuki Tajima and Yuhei Yamada (Github username: Indigo Carmine)
 * **Last Modified by:**
 * **Last Reviewed by:**
 """
