@@ -9,9 +9,12 @@ The geometric parameters are:
 
 * $R$: major (ring) radius of the torus centerline
 * $a$: core minor radius in the radial direction
-* $\nu$: aspect ratio of the elliptical cross-section, defined as $\nu = b/a$,
-  where $b$ is the core minor radius in the vertical direction
+* $\nu$: aspect ratio of the elliptical cross-section
 * $t$: shell thickness
+
+.. figure:: img/torus_elliptical_shell_geometry.png
+
+    Schematic geometry of the torus with elliptical tube cross-section.
 
 The same aspect ratio $\nu$ is used for both the core and outer cross-sections,
 so the outer semi-axes are $a+t$ and $\nu(a+t)$.
@@ -56,16 +59,11 @@ where
 Here $S(q)$ represents the structure factor accounting for
 interparticle correlations.
 
-The shell volume used by the kernel is
-
-.. math::
-
-    V = 2\pi R\left[\pi(a+t)\nu(a+t) - \pi a(\nu a)\right]
-
 .. note::
 
     The C kernel integrates over $r \in [R-x, R+x]$, so the model assumes an
     open torus hole and is only geometrically meaningful when $R > a+t$.
+    (Probably, you don't call it a donut if the hole is closed!)
 
 References
 ----------
@@ -76,7 +74,7 @@ References
 Authorship and Verification
 ---------------------------
 
-* **Author:** Itsuki Tajima and Yuhei Yamada (Github username: Indigo Carmine)
+* **Author:** Itsuki Tajima and Yuhei Yamada (Github username: Indigo Carmine, https://orcid.org/0009-0003-9780-4135)
 * **Last Modified by:**
 * **Last Reviewed by:**
 """
@@ -87,6 +85,7 @@ from numpy import inf
 name = "torus_elliptical_shell"
 title = "core-shell torus with elliptical cross-section"
 description = "Core-shell torus with elliptical tube cross-section"
+category = "shape:cylinder"
 parameters = [
     # name          units        default  [min,   max]  type     description
     ["radius", "Ang", 100.0, [0, inf], "volume", "Torus major radius R"],
