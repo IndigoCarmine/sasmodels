@@ -67,8 +67,7 @@ Authorship and Verification
 * **Last Modified by:**
 """
 
-import numpy as np
-from numpy import cos, inf, pi, sin
+from numpy import inf
 
 name = "tetrapod"
 title = "Tetrapod with four cylindrical arms"
