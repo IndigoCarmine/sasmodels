@@ -8,17 +8,13 @@ static double u_n(int n, double theta, double alpha) {
          sin(A) * sin(theta) * cos(alpha - phi[n]);
 }
 
-static double A_n(double q, double u, double L, double R) {
+static double Fq_n(double q, double u, double L, double R) {
   double quL2 = q * u * L * 0.5;
-
-  double term1 = (fabs(quL2) > 1e-12) ? sin(quL2) / quL2 : 1.0;
 
   double mu = sqrt(fmax(0.0, 1.0 - u * u));
   double qmuR = q * mu * R;
 
-  double term2 = (fabs(qmuR) > 1e-12) ? 2.0 * sas_J1(qmuR) / qmuR : 1.0;
-
-  return term1 * term2;
+  return sas_sinx_x(quL2) * sas_2J1x_x(qmuR);
 }
 
 static double form_volume(double L, double R) {
@@ -49,7 +45,7 @@ static double Iq(double q, double L, double R, double sld_particle,
         for (int m = 0; m < 4; m++) {
           double u = u_n(n, theta, alpha);
           double v = u_n(m, theta, alpha);
-          sum_arms += A_n(q, u, L, R) * A_n(q, v, L, R) *
+          sum_arms += Fq_n(q, u, L, R) * Fq_n(q, v, L, R) *
                       cos(q * (u - v) * L / 2.0) * sin(theta);
         }
       }
@@ -57,5 +53,5 @@ static double Iq(double q, double L, double R, double sld_particle,
     }
     total += integral_alpha * w_theta;
   }
-  return contrast * contrast * total * 2 * M_PI;
+  return contrast * contrast * total * 2 / M_PI;
 }

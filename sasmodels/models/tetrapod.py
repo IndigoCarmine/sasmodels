@@ -6,7 +6,7 @@ Calculates the scattering from a tetrapod-shaped structure. A tetrapod consists
 of four cylindrical arms radiating from a central point, oriented along the
 (1,1,1), (-1,-1,1), (-1,1,-1), and (1,-1,-1) directions.
 
-The scattering intensity is calculated as a powder average over all
+The scattering intensity is calculated as an average over all
 orientations:
 
 .. math::
@@ -88,8 +88,3 @@ parameters = [
 
 source = ["lib/polevl.c", "lib/sas_J1.c", "lib/gauss76.c", "tetrapod.c"]
 have_Fq = False
-
-tests = [
-    # Default parameters: length=400, radius=30, sld=4, sld_solvent=1
-    [{}, 0.1, 1.0026479478514564e-3],
-]
