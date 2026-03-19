@@ -24,13 +24,6 @@ static double F_torus(double Q, double theta, double R, double x, double nu,
 
   f_total = 0.0;
 
-  if (Q_sin_theta == 0.0) {
-    // If Q * sin(theta) is zero, the integral simplifies to a constant
-    // value since J0(0) = 1 and sin(0) = 0.
-    return 4.0 * M_PI * R * x *
-           delta_eta;  // integral over [R - x, R + x] is just a constant
-  }
-
   for (int i = 0; i < GAUSS_N; i++) {
     // translate a point in[-1, 1] to a point in[R - x, R + x]
     r = GAUSS_Z[i] * x + R;
