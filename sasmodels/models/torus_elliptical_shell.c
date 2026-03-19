@@ -35,16 +35,9 @@ static double F_torus(double Q, double theta, double R, double x, double nu,
     // translate a point in[-1, 1] to a point in[R - x, R + x]
     r = GAUSS_Z[i] * x + R;
 
-    // gamma = nu * sqrt(fmax(square_x - square(r - R), 0.0));
-#ifdef USE_OPENCL  // if you can use OpenCL, use the step function.
-    gamma_arg = square_x - square(r - R);
-    gamma = nu * sqrt(fabs(gamma_arg)) * step(0.0, gamma_arg);
-#else
-    gamma = nu * sqrt(fmax(square_x - square(r - R), 0.0));
-#endif
+    gamma = nu * sqrt(square_x - square(r - R));
 
-    int_r_delta =
-        r * sas_J0(r * Q_sin_theta) * sin(gamma * Q_cos_theta) / Q_cos_theta;
+    int_r_delta = r * sas_J0(r * Q_sin_theta) * sas_sinx_x(Q_cos_theta) * gamma;
     f_total += GAUSS_W[i] * int_r_delta;
   }
 
@@ -52,9 +45,9 @@ static double F_torus(double Q, double theta, double R, double x, double nu,
          delta_eta;  // multiply by x to get the integral over [R - x, R + x]
 }
 
-static double Iq_non_correlation(double q, double radius, double core_radius,
-                                 double thickness, double nu, double sld_core,
-                                 double sld_shell, double sld_solvent) {
+static double Iq(double q, double radius, double core_radius, double thickness,
+                 double nu, double sld_core, double sld_shell,
+                 double sld_solvent) {
   // integral_{0}^{pi / 2}
   //  | F_torus(Q, theta, R, core_radius + thickness, nu, sld_shell -
   //  sld_solvent)   // shell
@@ -77,13 +70,4 @@ static double Iq_non_correlation(double q, double radius, double core_radius,
 
   return I_total *
          M_PI_4;  // multiply by pi/4 to get the integral over [0, pi/2]
-}
-
-static double Iq(double q, double radius, double core_radius, double thickness,
-                 double nu, double sld_core, double sld_shell,
-                 double sld_solvent, double zeta, double kappa) {
-  double Sq = 1 + (kappa / (1 + square(q * zeta)));
-
-  return Sq * Iq_non_correlation(q, radius, core_radius, thickness, nu,
-                                 sld_core, sld_shell, sld_solvent);
 }

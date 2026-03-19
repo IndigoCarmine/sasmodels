@@ -59,12 +59,6 @@ where
 Here $S(q)$ represents the structure factor accounting for
 interparticle correlations.
 
-.. note::
-
-    The C kernel integrates over $r \in [R-x, R+x]$, so the model assumes an
-    open torus hole and is only geometrically meaningful when $R > a+t$.
-    (Probably, you don't call it a donut if the hole is closed!)
-
 References
 ----------
 #.  T. Kawaguchi, *J. Appl. Crystallogr*, 34(2001) 580-584
@@ -74,7 +68,7 @@ References
 Authorship and Verification
 ---------------------------
 
-* **Author:** Itsuki Tajima and Yuhei Yamada (Github username: Indigo Carmine, https://orcid.org/0009-0003-9780-4135)
+* **Author:** Itsuki Tajima and Yuhei Yamada (Github user name: Indigo Carmine, https://orcid.org/0009-0003-9780-4135)
 * **Last Modified by:**
 * **Last Reviewed by:**
 """
@@ -102,16 +96,9 @@ parameters = [
     ["sld_core", "1e-6/Ang^2", 0.0, [-inf, inf], "sld", "Core SLD"],
     ["sld_shell", "1e-6/Ang^2", 1.0, [-inf, inf], "sld", "Shell SLD"],
     ["sld_solvent", "1e-6/Ang^2", 0.0, [-inf, inf], "sld", "Solvent SLD"],
-    ["zeta", "Ang", 0.0, [-inf, inf], "", "a correlation length"],
-    [
-        "kappa",
-        "",
-        0.0,
-        [-inf, inf],
-        "",
-        "the strength of interactions via the isothermal compressibility",
-    ],
 ]
+
+valid = "radius >= core_radius + thickness"
 
 # -- tell sasmodels that a C kernel is provided -------------------------------
 source = [
