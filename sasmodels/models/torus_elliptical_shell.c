@@ -17,7 +17,7 @@ static double F_torus(double Q, double theta, double R, double x, double nu,
   // Set lower integration bound to R-x (not min(R-x,0)), since a torus has a
   // hole and R-x > 0 is always valid.
 
-  double gamma, int_r_delta, r, f_total, gamma_arg;
+  double gamma = 0, int_r_delta = 0, r = 0, f_total = 0, gamma_arg = 0;
   const double square_x = square(x);
   const double Q_sin_theta = Q * sin(theta);
   const double Q_cos_theta = Q * cos(theta);
@@ -48,8 +48,7 @@ static double Iq(double q, double radius, double core_radius, double thickness,
   //    - F_torus(Q, theta, R, core_radius, nu, sld_core - sld_solvent) //
   //    core
   //  |^2 dtheta
-  double F_diff, theta;
-  double I_total = 0.0;
+  double F_diff = 0.0, theta = 0.0, I_total = 0.0;
 
   for (int i = 0; i < GAUSS_N; i++) {
     // translate a point in[-1, 1] to a point in[0, pi / 2]
