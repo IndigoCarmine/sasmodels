@@ -1,10 +1,8 @@
 static double form_volume(double radius, double core_radius, double thickness,
                           double nu) {
-  double a = core_radius;
-  double b = nu * a;
-  double ao = a + thickness;
+  double ao = core_radius + thickness;
   double bo = nu * ao;
-  double area = M_PI * ao * bo - M_PI * a * b;
+  double area = M_PI * ao * bo;
   return 2.0 * M_PI * radius * area;
 }
 
@@ -17,7 +15,7 @@ static double F_torus(double Q, double theta, double R, double x, double nu,
   // Set lower integration bound to R-x (not min(R-x,0)), since a torus has a
   // hole and R-x > 0 is always valid.
 
-  double gamma = 0, int_r_delta = 0, r = 0, f_total = 0, gamma_arg = 0;
+  double gamma = 0, int_r_delta = 0, r = 0, f_total = 0;
   const double square_x = square(x);
   const double Q_sin_theta = Q * sin(theta);
   const double Q_cos_theta = Q * cos(theta);
@@ -61,6 +59,8 @@ static double Iq(double q, double radius, double core_radius, double thickness,
     I_total += GAUSS_W[i] * square(F_diff) * sin(theta);
   }
 
-  return I_total *
-         M_PI_4;  // multiply by pi/4 to get the integral over [0, pi/2]
+  // multiply by pi/4 to get the integral over [0, pi/2]
+  double result = I_total / form_volume(radius, core_radius, thickness, nu) *
+                  M_PI_4;  // A^-1
+  return 1e8 * result;     // convert from A^-1 to cm^-1
 }
