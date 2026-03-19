@@ -37,7 +37,8 @@ static double F_torus(double Q, double theta, double R, double x, double nu,
 
     gamma = nu * sqrt(square_x - square(r - R));
 
-    int_r_delta = r * sas_J0(r * Q_sin_theta) * sas_sinx_x(Q_cos_theta) * gamma;
+    int_r_delta =
+        r * sas_J0(r * Q_sin_theta) * sas_sinx_x(Q_cos_theta * gamma) * gamma;
     f_total += GAUSS_W[i] * int_r_delta;
   }
 
