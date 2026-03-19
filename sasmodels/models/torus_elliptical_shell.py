@@ -63,7 +63,6 @@ References
 ----------
 #.  T. Kawaguchi, *J. Appl. Crystallogr*, 34(2001) 580-584
 #.  S. Förster, *J. Phys. Chem.*, 103(1999) 6657-6668
-#.  M. J. Hollamby, *Angew. Chem. Int. Ed.* 55(2016) 9890
 
 Authorship and Verification
 ---------------------------
