@@ -103,7 +103,7 @@ valid = "radius >= core_radius + thickness"
 # -- tell sasmodels that a C kernel is provided -------------------------------
 source = [
     "lib/polevl.c",
-    "lib/sas_j0.c",
+    "lib/sas_J0.c",
     "lib/gauss76.c",
     "torus_elliptical_shell.c",
 ]  # compiled together with default libs
