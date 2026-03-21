@@ -1,5 +1,6 @@
 static double form_volume(double radius, double core_radius, double thickness,
-                          double nu) {
+                          double nu)
+{
   double ao = core_radius + thickness;
   double bo = nu * ao;
   double area = M_PI * ao * bo;
@@ -7,7 +8,8 @@ static double form_volume(double radius, double core_radius, double thickness,
 }
 
 static double F_torus(double Q, double theta, double R, double x, double nu,
-                      double delta_eta) {
+                      double delta_eta)
+{
   // integral_{R - x}^{R + x}
   // 4 * pi * r * J0(Q * r * sin(theta)) * ganmma
   // sinx_x(Q * ganmma * cos(theta)) dr
@@ -22,7 +24,8 @@ static double F_torus(double Q, double theta, double R, double x, double nu,
 
   f_total = 0.0;
 
-  for (int i = 0; i < GAUSS_N; i++) {
+  for (int i = 0; i < GAUSS_N; i++)
+  {
     // translate a point in[-1, 1] to a point in[R - x, R + x]
     r = GAUSS_Z[i] * x + R;
 
@@ -34,21 +37,23 @@ static double F_torus(double Q, double theta, double R, double x, double nu,
   }
 
   return 4.0 * M_PI * f_total * x *
-         delta_eta;  // multiply by x to get the integral over [R - x, R + x]
+         delta_eta; // multiply by x to get the integral over [R - x, R + x]
 }
 
-static double Iq(double q, double radius, double core_radius, double thickness,
-                 double nu, double sld_core, double sld_shell,
-                 double sld_solvent) {
-  // integral_{0}^{pi / 2}
+static void Fq(double q, double *F1, double *F2, double radius, double core_radius, double thickness,
+               double nu, double sld_core, double sld_shell,
+               double sld_solvent)
+{
+  // F2 = integral_{0}^{pi / 2}
   //  | F_torus(Q, theta, R, core_radius + thickness, nu, sld_shell -
   //  sld_solvent)   // shell
   //    - F_torus(Q, theta, R, core_radius, nu, sld_core - sld_solvent) //
   //    core
   //  |^2 dtheta
-  double F_diff = 0.0, theta = 0.0, I_total = 0.0;
+  double F_diff = 0.0, theta = 0.0, F1_total = 0.0, F2_total = 0.0;
 
-  for (int i = 0; i < GAUSS_N; i++) {
+  for (int i = 0; i < GAUSS_N; i++)
+  {
     // translate a point in[-1, 1] to a point in[0, pi / 2]
     theta = GAUSS_Z[i] * M_PI_4 + M_PI_4;
 
@@ -56,11 +61,22 @@ static double Iq(double q, double radius, double core_radius, double thickness,
                      sld_shell - sld_solvent) -
              F_torus(q, theta, radius, core_radius, nu, sld_shell - sld_core);
 
-    I_total += GAUSS_W[i] * square(F_diff) * sin(theta);
+    F1_total += GAUSS_W[i] * F_diff * sin(theta);
+    F2_total += GAUSS_W[i] * square(F_diff) * sin(theta);
   }
 
   // multiply by pi/4 to get the integral over [0, pi/2]
-  double result = I_total / form_volume(radius, core_radius, thickness, nu) *
-                  M_PI_4;  // A^-1
-  return 1e8 * result;     // convert from A^-1 to cm^-1
+
+  *F1 = 1e-2 * F1_total * M_PI_4;
+  *F2 = 1e-4 * F2_total * M_PI_4;
+}
+
+static double Iq(double q, double radius, double core_radius, double thickness,
+                 double nu, double sld_core, double sld_shell,
+                 double sld_solvent)
+{
+  double F1 = 0.0, F2 = 0.0;
+  Fq(q, &F1, &F2, radius, core_radius, thickness, nu, sld_core, sld_shell,
+     sld_solvent);
+  return F2;
 }
