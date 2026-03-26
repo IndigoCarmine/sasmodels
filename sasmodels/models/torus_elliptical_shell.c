@@ -1,15 +1,36 @@
 static double form_volume(double radius, double core_radius, double thickness,
-                          double nu)
-{
+                          double nu) {
   double ao = core_radius + thickness;
   double bo = nu * ao;
   double area = M_PI * ao * bo;
   return 2.0 * M_PI * radius * area;
 }
 
+static double radius_from_volume(double volume, double core_radius,
+                                 double thickness, double nu) {
+  return cbrt(form_volume(1.0, core_radius, thickness, nu) / M_4PI_3);
+}
+
+static double radius_from_diagonal(double radius, double core_radius,
+                                   double thickness, double nu) {
+  return radius + core_radius + thickness;
+}
+
+static double radius_effective(int mode, double radius, double core_radius,
+                               double thickness, double nu) {
+  switch (mode) {
+    case 1:
+      return radius_from_diagonal(radius, core_radius, thickness, nu);
+    case 2:
+      return radius_from_volume(form_volume(radius, core_radius, thickness, nu),
+                                core_radius, thickness, nu);
+    default:
+      return radius;
+  }
+}
+
 static double F_torus(double Q, double theta, double R, double x, double nu,
-                      double delta_eta)
-{
+                      double delta_eta) {
   // integral_{R - x}^{R + x}
   // 4 * pi * r * J0(Q * r * sin(theta)) * ganmma
   // sinx_x(Q * ganmma * cos(theta)) dr
@@ -24,8 +45,7 @@ static double F_torus(double Q, double theta, double R, double x, double nu,
 
   f_total = 0.0;
 
-  for (int i = 0; i < GAUSS_N; i++)
-  {
+  for (int i = 0; i < GAUSS_N; i++) {
     // translate a point in[-1, 1] to a point in[R - x, R + x]
     r = GAUSS_Z[i] * x + R;
 
@@ -37,13 +57,12 @@ static double F_torus(double Q, double theta, double R, double x, double nu,
   }
 
   return 4.0 * M_PI * f_total * x *
-         delta_eta; // multiply by x to get the integral over [R - x, R + x]
+         delta_eta;  // multiply by x to get the integral over [R - x, R + x]
 }
 
-static void Fq(double q, double *F1, double *F2, double radius, double core_radius, double thickness,
-               double nu, double sld_core, double sld_shell,
-               double sld_solvent)
-{
+static void Fq(double q, double* F1, double* F2, double radius,
+               double core_radius, double thickness, double nu, double sld_core,
+               double sld_shell, double sld_solvent) {
   // F2 = integral_{0}^{pi / 2}
   //  | F_torus(Q, theta, R, core_radius + thickness, nu, sld_shell -
   //  sld_solvent)   // shell
@@ -52,8 +71,7 @@ static void Fq(double q, double *F1, double *F2, double radius, double core_radi
   //  |^2 dtheta
   double F_diff = 0.0, theta = 0.0, F1_total = 0.0, F2_total = 0.0;
 
-  for (int i = 0; i < GAUSS_N; i++)
-  {
+  for (int i = 0; i < GAUSS_N; i++) {
     // translate a point in[-1, 1] to a point in[0, pi / 2]
     theta = GAUSS_Z[i] * M_PI_4 + M_PI_4;
 
@@ -73,8 +91,7 @@ static void Fq(double q, double *F1, double *F2, double radius, double core_radi
 
 static double Iq(double q, double radius, double core_radius, double thickness,
                  double nu, double sld_core, double sld_shell,
-                 double sld_solvent)
-{
+                 double sld_solvent) {
   double F1 = 0.0, F2 = 0.0;
   Fq(q, &F1, &F2, radius, core_radius, thickness, nu, sld_core, sld_shell,
      sld_solvent);
