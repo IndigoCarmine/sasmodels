@@ -1,29 +1,35 @@
 static double form_volume(double radius, double core_radius, double thickness,
-                          double nu) {
+                          double nu_core, double nu_shell) {
+  double nu_outer =
+      (nu_shell * thickness + nu_core * core_radius) /
+      (thickness + core_radius);  // aspect ratio of the outer ellipse
   double ao = core_radius + thickness;
-  double bo = nu * ao;
+  double bo = nu_outer * ao;
   double area = M_PI * ao * bo;
   return 2.0 * M_PI * radius * area;
 }
 
-static double radius_from_volume(double volume, double core_radius,
-                                 double thickness, double nu) {
-  return cbrt(form_volume(1.0, core_radius, thickness, nu) / M_4PI_3);
+static double radius_from_volume(double core_radius, double thickness,
+                                 double nu_core, double nu_shell) {
+  return cbrt(form_volume(1.0, core_radius, thickness, nu_core, nu_shell) /
+              M_4PI_3);
 }
 
 static double radius_from_diagonal(double radius, double core_radius,
-                                   double thickness, double nu) {
+                                   double thickness, double nu_core,
+                                   double nu_shell) {
   return radius + core_radius + thickness;
 }
 
 static double radius_effective(int mode, double radius, double core_radius,
-                               double thickness, double nu) {
+                               double thickness, double nu_core,
+                               double nu_shell) {
   switch (mode) {
     case 1:
-      return radius_from_diagonal(radius, core_radius, thickness, nu);
+      return radius_from_diagonal(radius, core_radius, thickness, nu_core,
+                                  nu_shell);
     case 2:
-      return radius_from_volume(form_volume(radius, core_radius, thickness, nu),
-                                core_radius, thickness, nu);
+      return radius_from_volume(core_radius, thickness, nu_core, nu_shell);
     default:
       return radius;
   }
@@ -61,8 +67,9 @@ static double F_torus(double Q, double theta, double R, double x, double nu,
 }
 
 static void Fq(double q, double* F1, double* F2, double radius,
-               double core_radius, double thickness, double nu, double sld_core,
-               double sld_shell, double sld_solvent) {
+               double core_radius, double thickness, double nu_core,
+               double nu_shell, double sld_core, double sld_shell,
+               double sld_solvent) {
   // F2 = integral_{0}^{pi / 2}
   //  | F_torus(Q, theta, R, core_radius + thickness, nu, sld_shell -
   //  sld_solvent)   // shell
@@ -71,13 +78,18 @@ static void Fq(double q, double* F1, double* F2, double radius,
   //  |^2 dtheta
   double F_diff = 0.0, theta = 0.0, F1_total = 0.0, F2_total = 0.0;
 
+  double nu_outer =
+      (nu_shell * thickness + nu_core * core_radius) /
+      (thickness + core_radius);  // aspect ratio of the outer ellipse
+
   for (int i = 0; i < GAUSS_N; i++) {
     // translate a point in[-1, 1] to a point in[0, pi / 2]
     theta = GAUSS_Z[i] * M_PI_4 + M_PI_4;
 
-    F_diff = F_torus(q, theta, radius, core_radius + thickness, nu,
-                     sld_shell - sld_solvent) -
-             F_torus(q, theta, radius, core_radius, nu, sld_shell - sld_core);
+    F_diff =
+        F_torus(q, theta, radius, core_radius + thickness, nu_outer,
+                sld_shell - sld_solvent) -
+        F_torus(q, theta, radius, core_radius, nu_core, sld_shell - sld_core);
 
     F1_total += GAUSS_W[i] * F_diff * sin(theta);
     F2_total += GAUSS_W[i] * square(F_diff) * sin(theta);
@@ -90,10 +102,10 @@ static void Fq(double q, double* F1, double* F2, double radius,
 }
 
 static double Iq(double q, double radius, double core_radius, double thickness,
-                 double nu, double sld_core, double sld_shell,
-                 double sld_solvent) {
+                 double nu_core, double nu_shell, double sld_core,
+                 double sld_shell, double sld_solvent) {
   double F1 = 0.0, F2 = 0.0;
-  Fq(q, &F1, &F2, radius, core_radius, thickness, nu, sld_core, sld_shell,
-     sld_solvent);
+  Fq(q, &F1, &F2, radius, core_radius, thickness, nu_core, nu_shell, sld_core,
+     sld_shell, sld_solvent);
   return F2;
 }

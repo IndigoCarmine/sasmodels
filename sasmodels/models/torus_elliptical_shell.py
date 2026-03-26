@@ -9,15 +9,17 @@ The geometric parameters are:
 
 * $R$: major (ring) radius of the torus centerline
 * $a$: core minor radius in the radial direction
-* $\nu$: aspect ratio of the elliptical cross-section
+* $\nu_{core}$: aspect ratio of the elliptical core cross-section
+* $\nu_{shell}$: aspect ratio of the elliptical shell cross-section
 * $t$: shell thickness
 
 .. figure:: img/torus_elliptical_shell_geometry.png
 
     Schematic geometry of the torus with elliptical tube cross-section.
 
-The same aspect ratio $\nu$ is used for both the core and outer cross-sections,
-so the outer semi-axes are $a+t$ and $\nu(a+t)$.
+The core and shell have independent aspect ratios, so the core semi-axes are
+$a$ and $\nu_{core} \cdot a$, and the outer semi-axes are $a+t$ and
+$\nu_{core} \cdot a + \nu_{shell} \cdot t$.
 
 For a given orientation angle $\theta$ between the torus symmetry axis and
 $\vec q$, the kernel evaluates the amplitude using a numerical integral over
@@ -25,10 +27,11 @@ the tube section:
 
 .. math::
 
-    F(q,\theta; x, \Delta\rho)
+    F(q,\theta; x, \Delta\rho, \nu)
     = 4\pi\,\Delta\rho\int_{R-x}^{R+x}
       r\,J_0\!\left(qr\sin\theta\right)
       \frac{\sin\!\left(q\,\gamma\cos\theta\right)}{q\cos\theta}\,dr
+
 
 with
 
@@ -36,28 +39,24 @@ with
 
     \gamma = \nu\sqrt{x^2-(r-R)^2}
 
+
 The core-shell amplitude is formed from outer and inner contributions:
 
 .. math::
 
     F_{cs}(q,\theta) =
-    F\!\left(q,\theta;a + t,\rho_{shell}-\rho_{solvent}\right)
-    -F\!\left(q,\theta;a,\rho_{shell}-\rho_{core}\right)
+    F\!\left(q,\theta;a + t,\rho_{shell}-\rho_{solvent},\nu_{outer}\right)
+    -F\!\left(q,\theta;a,\rho_{shell}-\rho_{core},\nu_{core}\right)
+
+
+where $\nu_{outer} = \frac{\nu_{shell}t + \nu_{core}a}{a+t}$ is the aspect ratio of the outer ellipse.
 
 and the orientationally averaged intensity is
 
 .. math::
 
-    I(q) = S(q)\int_0^{\pi/2}\!\left|F_{cs}(q,\theta)\right|^2\sin\theta\,d\theta
+    I(q) = \int_0^{\pi/2}\!\left|F_{cs}(q,\theta)\right|^2\sin\theta\,d\theta
 
-where
-
-.. math::
-
-    S(q)=1+\frac{\kappa}{1+(q\zeta)^2}
-
-Here $S(q)$ represents the structure factor accounting for
-interparticle correlations.
 
 References
 ----------
@@ -91,7 +90,8 @@ parameters = [
         "Elliptical core minor radius a",
     ],
     ["thickness", "Ang", 2.0, [0, inf], "volume", "Shell thickness"],
-    ["nu", "", 1.0, [0.1, 10.0], "volume", "Aspect ratio b/a"],
+    ["nu_core", "", 1.0, [0.1, 10.0], "volume", "Aspect ratio b/a"],
+    ["nu_shell", "", 1.0, [0.1, 10.0], "volume", "Aspect ratio of shell cross-section"],
     ["sld_core", "1e-6/Ang^2", 0.0, [-inf, inf], "sld", "Core SLD"],
     ["sld_shell", "1e-6/Ang^2", 1.0, [-inf, inf], "sld", "Shell SLD"],
     ["sld_solvent", "1e-6/Ang^2", 0.0, [-inf, inf], "sld", "Solvent SLD"],
