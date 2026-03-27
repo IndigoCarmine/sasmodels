@@ -27,6 +27,7 @@ static double radius_effective(int mode, double radius, double core_radius,
                                   nu_shell);
     case 2:
       return radius_from_volume(core_radius, thickness, nu_core, nu_shell);
+    case 3:
     default:
       return radius;
   }
