@@ -82,22 +82,22 @@ parameters = [
     # name          units        default  [min,   max]  type     description
     ["radius", "Ang", 100.0, [0, inf], "volume", "Torus major radius R"],
     [
-        "core_radius",
+        "radius_core",
         "Ang",
         5.0,
         [0, inf],
         "volume",
         "Elliptical core minor radius a",
     ],
-    ["thickness", "Ang", 2.0, [0, inf], "volume", "Shell thickness"],
-    ["nu_core", "", 1.0, [0.1, 10.0], "volume", "Aspect ratio b/a"],
-    ["nu_shell", "", 1.0, [0.1, 10.0], "volume", "Aspect ratio of shell cross-section"],
+    ["thickness", "Ang", 2.0, [0, inf], "volume", "Shell thickness t"],
+    ["core_nu", "", 1.0, [0.1, 10.0], "volume", "Aspect ratio of core cross-section"],
+    ["shell_nu", "", 1.0, [0.1, 10.0], "volume", "Aspect ratio of shell cross-section"],
     ["sld_core", "1e-6/Ang^2", 0.0, [-inf, inf], "sld", "Core SLD"],
     ["sld_shell", "1e-6/Ang^2", 1.0, [-inf, inf], "sld", "Shell SLD"],
     ["sld_solvent", "1e-6/Ang^2", 0.0, [-inf, inf], "sld", "Solvent SLD"],
 ]
 
-valid = "radius >= core_radius + thickness"
+valid = "radius >= radius_core + thickness"
 
 # -- tell sasmodels that a C kernel is provided -------------------------------
 source = [
