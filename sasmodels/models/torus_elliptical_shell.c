@@ -18,6 +18,32 @@ static double radius_from_diagonal(double radius, double core_radius,
   return radius + core_radius + thickness;
 }
 
+static double max_radius(double core_radius, double thickness, double nu_core,
+                         double nu_shell, double torus_radius) {
+  // equatorial radius of the outer ellipse
+  double r_e = core_radius + thickness;
+
+  // polar radius of the outer ellipse
+  double r_p = nu_core * core_radius + nu_shell * thickness;
+
+  double denom = square(r_p) - square(r_e);
+
+  if (denom > 0.0) {
+    double cos_theta = (torus_radius * r_e) / denom;
+
+    if (fabs(cos_theta) <= 1.0) {
+      double nu = r_p / r_e;
+
+      double r_max_sq = square(torus_radius) + square(r_e) +
+                        square(r_p) * ((square(nu) - 1.0) / square(nu));
+
+      return sqrt(r_max_sq);
+    }
+  }
+
+  return torus_radius + r_e;
+}
+
 static double radius_effective(int mode, double radius, double core_radius,
                                double thickness, double nu_core,
                                double nu_shell) {
@@ -28,6 +54,8 @@ static double radius_effective(int mode, double radius, double core_radius,
     case 2:
       return radius_from_volume(core_radius, thickness, nu_core, nu_shell);
     case 3:
+      return max_radius(core_radius, thickness, nu_core, nu_shell, radius);
+    case 4:
     default:
       return radius;
   }
