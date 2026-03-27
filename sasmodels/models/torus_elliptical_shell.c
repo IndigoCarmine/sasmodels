@@ -1,10 +1,7 @@
 static double form_volume(double radius, double core_radius, double thickness,
                           double nu_core, double nu_shell) {
-  double nu_outer =
-      (nu_shell * thickness + nu_core * core_radius) /
-      (thickness + core_radius);  // aspect ratio of the outer ellipse
   double ao = core_radius + thickness;
-  double bo = nu_outer * ao;
+  double bo = nu_core * core_radius + nu_shell * thickness;
   double area = M_PI * ao * bo;
   return 2.0 * M_PI * radius * area;
 }
