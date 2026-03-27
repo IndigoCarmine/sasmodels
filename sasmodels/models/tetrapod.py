@@ -63,7 +63,7 @@ References
 Authorship and Verification
 ----------------------------
 
-* **Author:** Yuhei Yamada
+* **Author:** Yuhei Yamada (Github user name: Indigo Carmine, https://orcid.org/0009-0003-9780-4135)
 * **Last Modified by:**
 """
 
@@ -87,3 +87,4 @@ parameters = [
 
 source = ["lib/polevl.c", "lib/sas_J1.c", "lib/gauss76.c", "tetrapod.c"]
 have_Fq = False
+opencl = True

@@ -53,5 +53,5 @@ static double Iq(double q, double L, double R, double sld_particle,
     }
     total += integral_alpha * w_theta;
   }
-  return contrast * contrast * total * 2 / M_PI;
+  return contrast * contrast * total * 2 / M_PI * form_volume(L, R);
 }
