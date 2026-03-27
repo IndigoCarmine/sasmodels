@@ -1,5 +1,5 @@
-const double A =
-    109.5 / 2.0 * M_PI / 180.0;  // half of the angle between arms in radians
+// half of the angle between arms in radians
+const double A = acos(-1 / 3) / 2.0 * M_PI / 180.0;
 
 static double u_n(int n, double theta, double alpha) {
   const double phi[4] = {0.0, M_PI_2, M_PI, 3.0 * M_PI_2};
